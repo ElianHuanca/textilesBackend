@@ -20,6 +20,14 @@ const Venta = sequelize.define('ventas', {
         type: DataTypes.FLOAT,        
         defaultValue: 0
     },
+    descuento:{
+        type: DataTypes.FLOAT,
+        defaultValue: 0
+    },
+    estado: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+    },
     idsucursales: {
         type: DataTypes.INTEGER,
         references: {

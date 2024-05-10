@@ -22,19 +22,19 @@ const registrarUsuario = async (req, res) => {
 };
 
 const actualizarUsuario = async (req, res) => {
-    try {
+    try {        
+        console.log('realizo la peticion de actualizar usuario');
         const { id } = req.params;
         const { nombre, correo, password } = req.body;
         const salt = bcryptjs.genSaltSync();
         const pass = bcryptjs.hashSync( password, salt );
-        const usuario = await Usuario.findByPk(id);
+        const usuario = await Usuario.findOne( { where: { id } } );
         usuario.nombre = nombre;
         usuario.correo = correo;
         usuario.password = pass;
         await usuario.save();
-        res.json(usuario);
-    } catch (error) {
-        console.error('Error al actualizar usuario:', error);
+        res.status(200).json(usuario);
+    } catch (error) {    
         res.status(500).json({ error: 'Error al actualizar usuario', message: error.message });
     }
 }
