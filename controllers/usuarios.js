@@ -6,6 +6,17 @@ const ObtenerUsuarios = async (req, res) => {
     res.json(usuarios);
 };
 
+const ObtenerUsuario = async (req, res) => {
+    try{
+        const { id } = req.params;
+        const usuario = await Usuario.findOne({ where: { id } });
+        res.json(usuario);
+    }catch(error){
+        console.error('Error al obtener usuario:', error);
+        res.status(500).json({ error: 'Error al obtener usuario', message: error.message });
+    }
+};
+
 const registrarUsuario = async (req, res) => {
     try {
         //res.json(req.body);
@@ -26,12 +37,14 @@ const actualizarUsuario = async (req, res) => {
         console.log('realizo la peticion de actualizar usuario');
         const { id } = req.params;
         const { nombre, correo, password } = req.body;
-        const salt = bcryptjs.genSaltSync();
-        const pass = bcryptjs.hashSync( password, salt );
         const usuario = await Usuario.findOne( { where: { id } } );
+        if (!password.isEmpty){
+            const salt = bcryptjs.genSaltSync();
+            const pass = bcryptjs.hashSync( password, salt );
+            usuario.password = pass;
+        }        
         usuario.nombre = nombre;
-        usuario.correo = correo;
-        usuario.password = pass;
+        usuario.correo = correo;        
         await usuario.save();
         res.status(200).json(usuario);
     } catch (error) {    
@@ -41,6 +54,7 @@ const actualizarUsuario = async (req, res) => {
     
 module.exports = {
     ObtenerUsuarios,
+    ObtenerUsuario,
     registrarUsuario,
     actualizarUsuario
 }

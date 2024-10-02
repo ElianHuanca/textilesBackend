@@ -11,14 +11,13 @@ console.log(database, username, password, host);
 
 const sequelize = new Sequelize(database, username, password ,{
     host,
-    port,
     dialect: 'postgres',
-    /* dialectOptions: {
+    dialectOptions: {
         ssl: {
           require: false,
           rejectUnauthorized: false // <<<<<<< YOU NEED THIS
         }
-    }, */
+    },
 });
 
 

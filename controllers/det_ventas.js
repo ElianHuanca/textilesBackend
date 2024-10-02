@@ -27,29 +27,19 @@ const ObtenerDetVentas = async (req, res) => {
 const RegistrarDetVentas = async (req, res) => {
     try {
         const { idventas } = req.params;
-        const data = req.body;       
-        const detallesVentasCreados = [];    
-        const vta = await Venta.findOne( { where: { id: idventas } } );            
-        for (const venta of data.ventas) {
-            const detVenta= await DetVenta.create({
+        const ventas = req.body;         
+        for (const venta of ventas) {
+            const {id}=await DetVenta.create({
                 idventas: idventas,
                 idtelas: venta.idtelas,
                 cantidad: venta.cantidad,
                 precio: venta.precio,
                 total: venta.total,
                 ganancias: venta.ganancias
-            });        
-               
-            detVenta.dataValues.nombre = venta.nombre;      
-            vta.total += venta.total;
-            vta.ganancias +=  venta.ganancias;      
-            detallesVentasCreados.push(detVenta);                         
-        }   
-        console.log(vta.descuento);           
-        vta.descuento +=  data.descuento;
-        console.log(vta.descuento);
-        await vta.save();
-        res.status(200).json(detallesVentasCreados);
+            });            
+            venta.id=id;                                                 
+        }                   
+        res.status(200).json(ventas);
     } catch (error) {
         console.error('Error al registrar detalle venta:', error);
         res.status(500).json({ error: 'Error al registrar detalle venta', message: error.message });
@@ -60,14 +50,10 @@ const RegistrarDetVentas = async (req, res) => {
 const eliminarDetVenta = async (req, res) => {
     try {
         const { id } = req.params;
-        const detVenta = await DetVenta.findByPk(id);
-        const venta = await Venta.findByPk(detVenta.idventas);
-        detVenta.estado = false;
-        venta.total -= detVenta.total;
-        venta.ganancias -= detVenta.ganancias;
-        await venta.save();
+        const detVenta = await DetVenta.findByPk(id);        
+        detVenta.estado = false;        
         await detVenta.save();
-        res.status(200).json({ message: 'Detalle de venta eliminado correctamente' });
+        res.status(200).json(detVenta);
     } catch (error) {
         console.error('Error al eliminar detalle de venta:', error);
         res.status(500).json({ error: 'Error al eliminar detalle de venta', message: error.message });
